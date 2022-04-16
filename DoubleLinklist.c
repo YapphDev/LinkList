@@ -53,7 +53,7 @@ bool Insert_First(doubleList *l, int n)
 {
     NODE *p;
     p = CreNode(n);
-    if (NULL == l || NULL == p)
+    if (NULL == l )
     {
         return flase;
     }
@@ -101,9 +101,8 @@ bool Insert_Last(doubleList *l, int n)
 
 bool Insert_After_Addr(doubleList *l, int n, int addr)
 {
-    NODE *p;
-    p = CreNode(n);
-    if (NULL == l || NULL == p || addr < 0 || addr > l ->Number_Of_Elements)
+
+    if (NULL == l || addr < 0 || addr > l ->Number_Of_Elements)
     {
         return flase;
     }
@@ -115,10 +114,19 @@ bool Insert_After_Addr(doubleList *l, int n, int addr)
         {
             q = q->next;
         }
-        p->next = q->next;
-        q->next->previous = p;
-        q->next = p;
-        p->previous = q;
+        if(q == l->tail)
+        {
+            Insert_Last(l,n);
+        }
+        else
+        {   
+            NODE *p;
+            p = CreNode(n);
+            p->next = q->next;
+            q->next->previous = p;
+            q->next = p;
+            p->previous = q;   
+        }
         l -> Number_Of_Elements ++;
         
     }
@@ -136,6 +144,8 @@ bool Delete_First(doubleList *l)
         NODE *q;
         q = l->head;
         l->head = q->next;
+        q->next->previous = NULL;
+        //q->next = NULL;
         free(q);
     }
     l->Number_Of_Elements--;
@@ -280,8 +290,9 @@ int main()
     // Delete_Node_Addr(&h,0);
     // Delete_Node_Addr(&h,1);
     // Delete_Node_Data(&h,20);
-    //Delete_First(&h);
-    // Show_List(&h);
+    Delete_First(&h);
+    Delete_First(&h);
+    Show_List(&h);
 
 
 
