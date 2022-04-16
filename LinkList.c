@@ -123,26 +123,49 @@ bool Insert_After_Addr(List *l, int n, int addr)
     }
     return true;
 }
-
-bool Delete_Node_Addr(List *l, int addr )
+bool Delete_First(List *l)
 {
-    if (NULL == l || addr <= 0 || addr > l ->Number_Of_Elements)
+    if (NULL == l )
     {
         return flase;
     }
     else
     {   
         
+        NODE *q;
+        q = l->head;
+        l->head = q->next;
+        free(q);
+    }
+    l->Number_Of_Elements--;
+    return true;
+}
+bool Delete_Node_Addr(List *l, int addr )
+{
+    if (NULL == l || addr < 0 || addr > l ->Number_Of_Elements)
+    {
+        return flase;
+    }
+    else if (0 == addr)
+    {
+        NODE *q;
+        q = l->head;
+        l->head = q->next;
+        free(q);
+    }
+    else
+    {   
+        
         NODE *q , *preq = NULL;
-        q = (NODE*)l;
+        q = l->head;
         while(addr--)
         {   
             preq = q;
             q = q->next; 
         }
-        preq->next = q->next;
-        q->next = NULL;
-        free(q);
+            preq->next = q->next;
+            q->next = NULL;
+            free(q);
     }
     l->Number_Of_Elements--;
     return true;
@@ -164,9 +187,19 @@ bool Delete_Node_Data(List *l, int data )
             preq = q;
             q = q->next; 
         }
-        preq->next = q->next;
-        q->next = NULL;
-        free(q);
+        if (NULL != q)
+        {
+            if(NULL == preq)
+        {
+            Delete_First(l);
+        }
+        else
+        {
+            preq->next = q->next;
+            q->next = NULL;
+            free(q);
+        }
+        }
     }
     l->Number_Of_Elements--;
     return true;
@@ -223,8 +256,10 @@ int main()
     Sort(&h);
     Show_List(h);
     printf("\n");
+    Delete_Node_Addr(&h,0);
     Delete_Node_Addr(&h,2);
-    Delete_Node_Data(&h,20);
+    Delete_Node_Data(&h,5);
+    //Delete_First(&h);
     Show_List(h);
 
 
