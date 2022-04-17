@@ -228,27 +228,23 @@ bool Delete_Node_Data(doubleList *l, int data )
     else if (l->head->data == data)
     {
         Delete_First(l);
-        //Delete_Node_Data((doubleList*)(l->head->next),data);
     }
     else if (l->tail->data == data)
     {
         Delete_Last(l);
     }
     else
-    {   NODE *q;
+    {   
+        NODE *q;
         q = l->head;
-        //if(q->data == data)
-        //{
-            q->previous->next = q->next;
-            q->next->previous = q->previous;
-            q->next = q->previous = NULL;
-            free(q);
-            //Delete_Node_Data((doubleList*)(q->next->next),data);
-        //}
-        //else
-        //{
-        //    Delete_Node_Data((doubleList*)(q->next),data);
-        //}
+        while(q->data != data)
+        {
+            q=q->next;
+        }
+        q->previous->next = q->next;
+        q->next->previous = q->previous;
+        q->next = q->previous = NULL;
+        free(q);
     }
     l->Number_Of_Elements--;
     return true;
