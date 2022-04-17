@@ -227,42 +227,39 @@ bool Delete_Node_Data(doubleList *l, int data )
     }
     else
     {   
-        
-        printf("ok\t");
         NODE *q;
         q = l->head;
-        while(q->data != data )
+        while((q != NULL) && (q->data != data) )
         {
             q=q->next;
-            printf("a\t");
         }
-        // if (q != NULL)
-        // {   
-        //     NODE *p;
-        //     p = q;
-        //     if(q->previous == NULL)
-        //     {
-        //         l->head = q->next;
-        //         q->next->previous = NULL;
-        //         q->next = NULL;
-        //         free(q);
-        //     }
-        //     else if (q->next == NULL)
-        //     {
-        //         l->tail = q->previous;
-        //         q->previous->next = NULL;
-        //         q->next = q->previous = NULL;
-        //         free(q);
-        //     }
-        //     else
-        //     {
-        //         q->previous->next = q->next;
-        //         q->next->previous = q->previous;
-        //         q->next = q->previous = NULL;
-        //         free(q);
-        //     }
-        //     l->Number_Of_Elements--;
-        // }
+        if (q != NULL)
+        {   
+            NODE *p;
+            p = q;
+            if(q->previous == NULL)
+            {
+                l->head = q->next;
+                q->next->previous = NULL;
+                q->next = NULL;
+                free(q);
+            }
+            else if (q->next == NULL)
+            {
+                l->tail = q->previous;
+                q->previous->next = NULL;
+                q->next = q->previous = NULL;
+                free(q);
+            }
+            else
+            {
+                q->previous->next = q->next;
+                q->next->previous = q->previous;
+                q->next = q->previous = NULL;
+                free(q);
+            }
+            l->Number_Of_Elements--;
+        }
     }
     return true;
 }
@@ -344,7 +341,7 @@ int main()
     printf("\n");
     //Delete_Node_Addr(&h,0);
     //Delete_Node_Addr(&h,1);
-    Delete_Node_Data(&h,99);
+    Delete_Node_Data(&h,29);
     // Delete_First(&h);
     // Delete_First(&h);
     // Delete_Last(&h);
