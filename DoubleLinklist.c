@@ -225,29 +225,45 @@ bool Delete_Node_Data(doubleList *l, int data )
     {
         return flase;
     }
-    else if (l->head->data == data)
-    {
-        Delete_First(l);
-    }
-    else if (l->tail->data == data)
-    {
-        Delete_Last(l);
-    }
     else
     {   
+        
+        printf("ok\t");
         NODE *q;
         q = l->head;
-        while(q->data != data)
+        while(q->data != data )
         {
             q=q->next;
+            printf("a\t");
         }
-        Delete_Node_Data((doubleList*)(q->next->next),data);
-        q->previous->next = q->next;
-        q->next->previous = q->previous;
-        q->next = q->previous = NULL;
-        free(q);
+        // if (q != NULL)
+        // {   
+        //     NODE *p;
+        //     p = q;
+        //     if(q->previous == NULL)
+        //     {
+        //         l->head = q->next;
+        //         q->next->previous = NULL;
+        //         q->next = NULL;
+        //         free(q);
+        //     }
+        //     else if (q->next == NULL)
+        //     {
+        //         l->tail = q->previous;
+        //         q->previous->next = NULL;
+        //         q->next = q->previous = NULL;
+        //         free(q);
+        //     }
+        //     else
+        //     {
+        //         q->previous->next = q->next;
+        //         q->next->previous = q->previous;
+        //         q->next = q->previous = NULL;
+        //         free(q);
+        //     }
+        //     l->Number_Of_Elements--;
+        // }
     }
-    l->Number_Of_Elements--;
     return true;
 }
 
@@ -308,29 +324,32 @@ int main()
     doubleList h;
     init(&h);
     Insert_First(&h,2);
+    Insert_First(&h,20);
     Insert_First(&h,5);
     Insert_First(&h,12);
+    Insert_First(&h,99);
     Insert_First(&h,20);
-    Insert_First(&h,7);
+    //Insert_First(&h,7);
     Insert_First(&h,26);
     Insert_Last(&h,17);
     Insert_Last(&h,20);
     Insert_Last(&h,7);
     Insert_After_Addr(&h,99,2);
     Show_List(&h);
-    printf("\n");
+    //printf("\n");
     // Sort(&h);
     // Show_List(&h);
-    printf("\n");
+    //printf("\n");
     //Show_List_Invert(&h);
     printf("\n");
     //Delete_Node_Addr(&h,0);
     //Delete_Node_Addr(&h,1);
-    Delete_Node_Data(&h,7);
+    Delete_Node_Data(&h,99);
     // Delete_First(&h);
     // Delete_First(&h);
     // Delete_Last(&h);
     // Delete_Last(&h);
+    //printf("%p",&h);
     Show_List(&h);
 
 
