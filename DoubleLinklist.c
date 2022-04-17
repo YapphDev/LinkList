@@ -241,6 +241,7 @@ bool Delete_Node_Data(doubleList *l, int data )
         {
             q=q->next;
         }
+        Delete_Node_Data((doubleList*)(q->next->next),data);
         q->previous->next = q->next;
         q->next->previous = q->previous;
         q->next = q->previous = NULL;
@@ -309,6 +310,7 @@ int main()
     Insert_First(&h,2);
     Insert_First(&h,5);
     Insert_First(&h,12);
+    Insert_First(&h,20);
     Insert_First(&h,7);
     Insert_First(&h,26);
     Insert_Last(&h,17);
@@ -324,7 +326,7 @@ int main()
     printf("\n");
     //Delete_Node_Addr(&h,0);
     //Delete_Node_Addr(&h,1);
-    Delete_Node_Data(&h,20);
+    Delete_Node_Data(&h,7);
     // Delete_First(&h);
     // Delete_First(&h);
     // Delete_Last(&h);
