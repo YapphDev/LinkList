@@ -140,17 +140,53 @@ bool Delete_First(doubleList *l)
     }
     else
     {   
-        
         NODE *q;
         q = l->head;
-        l->head = q->next;
-        q->next->previous = NULL;
-        //q->next = NULL;
-        free(q);
+        if(q->next == NULL)
+        {
+            l->head=l->tail=NULL;
+            q->next = q->previous = NULL;
+            free(q);
+        }
+        else
+        {
+            l->head = q->next;
+            q->next->previous = NULL;
+            q->next = NULL;
+            free(q);
+        }
     }
     l->Number_Of_Elements--;
     return true;
 }
+bool Delete_Last(doubleList *l)
+{
+    if (NULL == l )
+    {
+        return flase;
+    }
+    else
+    {   
+        NODE *q;
+        q = l->tail;
+        if(q->previous == NULL)
+        {
+            l->head=l->tail=NULL;
+            q->next = q->previous = NULL;
+            free(q);
+        }
+        else
+        {
+            l->tail = q->previous;
+            q->previous->next = NULL;
+            q->next = q->previous = NULL;
+            free(q);
+        }
+    }
+    l->Number_Of_Elements--;
+    return true;
+}
+
 bool Delete_Node_Addr(doubleList *l, int addr )
 {
     if (NULL == l || addr < 0 || addr > l ->Number_Of_Elements)
@@ -159,23 +195,24 @@ bool Delete_Node_Addr(doubleList *l, int addr )
     }
     else if (0 == addr)
     {
-        NODE *q;
-        q = l->head;
-        l->head = q->next;
-        free(q);
+        Delete_First(l);
+    }
+    else if (l->Number_Of_Elements == addr-1)
+    {
+        Delete_Last(l);
     }
     else
     {   
         
-        NODE *q , *preq = NULL;
+        NODE *q;
         q = l->head;
         while(addr--)
         {   
-            preq = q;
             q = q->next; 
         }
-            preq->next = q->next;
-            q->next = NULL;
+            q->previous->next = q->next;
+            q->next->previous = q->previous;
+            q->next = q->previous = NULL;
             free(q);
     }
     l->Number_Of_Elements--;
@@ -188,29 +225,30 @@ bool Delete_Node_Data(doubleList *l, int data )
     {
         return flase;
     }
+    else if (l->head->data == data)
+    {
+        Delete_First(l);
+        //Delete_Node_Data((doubleList*)(l->head->next),data);
+    }
+    else if (l->tail->data == data)
+    {
+        Delete_Last(l);
+    }
     else
-    {   
-        
-        NODE *q , *preq = NULL;
-        q = (NODE*)l;
-        while(q->data!=data)
-        {   
-            preq = q;
-            q = q->next; 
-        }
-        if (NULL != q)
-        {
-            if(NULL == preq)
-        {
-            Delete_First(l);
-        }
-        else
-        {
-            preq->next = q->next;
-            q->next = NULL;
+    {   NODE *q;
+        q = l->head;
+        //if(q->data == data)
+        //{
+            q->previous->next = q->next;
+            q->next->previous = q->previous;
+            q->next = q->previous = NULL;
             free(q);
-        }
-        }
+            //Delete_Node_Data((doubleList*)(q->next->next),data);
+        //}
+        //else
+        //{
+        //    Delete_Node_Data((doubleList*)(q->next),data);
+        //}
     }
     l->Number_Of_Elements--;
     return true;
@@ -279,19 +317,22 @@ int main()
     Insert_First(&h,26);
     Insert_Last(&h,17);
     Insert_Last(&h,20);
+    Insert_Last(&h,7);
     Insert_After_Addr(&h,99,2);
     Show_List(&h);
     printf("\n");
-    Sort(&h);
-    Show_List(&h);
+    // Sort(&h);
+    // Show_List(&h);
     printf("\n");
-    Show_List_Invert(&h);
+    //Show_List_Invert(&h);
     printf("\n");
-    // Delete_Node_Addr(&h,0);
-    // Delete_Node_Addr(&h,1);
-    // Delete_Node_Data(&h,20);
-    Delete_First(&h);
-    Delete_First(&h);
+    //Delete_Node_Addr(&h,0);
+    //Delete_Node_Addr(&h,1);
+    Delete_Node_Data(&h,20);
+    // Delete_First(&h);
+    // Delete_First(&h);
+    // Delete_Last(&h);
+    // Delete_Last(&h);
     Show_List(&h);
 
 
