@@ -51,7 +51,10 @@ Node *Search_Node(Tree *Tr,int data)
         return NULL;
     }
     else
-    {   
+    {
+        /*
+        Fine Node_Data
+        */
         Node *Node_Data;
         Node_Data = Tr->root;
         while( NULL != Node_Data  && Node_Data->data != data)
@@ -85,12 +88,14 @@ Node *Insert_Node(Tree *Tr,int data)
     }
     else
     {   
-
+        /*
+        Finding Farther of Node
+        */
         Node *Farther,*Son_Of_Farther;
         Son_Of_Farther = Tr->root;
         Farther = NULL;
         
-        while( NULL != Son_Of_Farther  && Son_Of_Farther->data != data)
+        while( NULL != Son_Of_Farther )
         {   
 
             Farther = Son_Of_Farther;
@@ -105,26 +110,25 @@ Node *Insert_Node(Tree *Tr,int data)
             }
         }
         
-        if (NULL == Son_Of_Farther)
+        /* 
+            Inserting Node to Farther 
+        */
+        Node *p = Cre_Node(data);
+        if( NULL == p)
         {
-            Node *p = Cre_Node(data);
-            if( NULL == p)
-            {
-                return NULL;
-            }
-            if(Farther->data > data)
-            {
-                Farther->left = p;
-            }
-            else 
-            {
-                Farther->right = p;
-            }
-            Tr->Total++;
-            return p;
+            return NULL;
         }
-        else return NULL;
-        
+        if(Farther->data > data)
+        {
+            Farther->left = p;
+        }
+        else 
+        {
+            Farther->right = p;
+        }
+        Tr->Total++;
+        return p;
+
     }
 }
 
@@ -157,6 +161,114 @@ void nlr (Node *root)
         }
     }
 }
+
+void Delete_Node(Tree *Tr, int data)
+{   
+    if(NULL != Tr)
+    {
+        Node *Node_Data,*preNode_Data;
+        Node_Data = Tr->root;
+        preNode_Data = NULL;
+        /*
+          Find Node 
+        */
+        while( NULL != Node_Data  && Node_Data->data != data)
+        {   
+            preNode_Data = Node_Data;
+            if (Node_Data->data > data)
+            {
+                Node_Data = Node_Data->left; 
+            }
+            
+            else 
+            {
+                Node_Data = Node_Data->right;
+            }
+        }
+        
+        
+        /*
+            Delete Node
+        */
+        if ( NULL != Node_Data)
+        {   
+            /*
+            If Node is leaf
+            */
+            if (NULL == Node_Data->right && NULL == Node_Data->left)
+            {
+                if( preNode_Data->data > Node_Data->data)
+                {
+                    preNode_Data->left = NULL;
+                }
+                else
+                {
+                    preNode_Data->right = NULL;
+                }
+                free(Node_Data);
+            }
+            /*
+            If Node is prarent have one leaf
+            */
+            else if (NULL == Node_Data->right)
+            {
+                if (preNode_Data->data > Node_Data->data)
+                {
+                    preNode_Data->left = Node_Data->left;
+                }
+                else
+                    preNode_Data->right = Node_Data->left;
+                free(Node_Data);
+            }
+            else if (NULL == Node_Data->left)
+            {
+                if (preNode_Data->data > Node_Data->data)
+                {
+                    preNode_Data->left = Node_Data->right;
+                }
+                else
+                    preNode_Data->right = Node_Data->right;
+                free(Node_Data);
+            }
+            
+            /*
+            If Node is prarent
+            */
+            else
+            {
+                Node *Replace_Node,*preReplace_Node;
+                preReplace_Node = Node_Data;
+                Replace_Node = Node_Data->left;
+                while(Replace_Node->right != NULL )
+                {   
+                    preReplace_Node = Replace_Node;
+                    Replace_Node = Replace_Node->right;
+                }
+                Node_Data->data = Replace_Node->data;
+                
+                /*
+                If Replace_Node is leaf
+                */
+                if ( NULL == Replace_Node->left)
+                {
+                    preReplace_Node->right = NULL;
+                    free(Replace_Node);
+                }
+                /*
+                If Replace_Node is prarent have one leaf
+                */
+                else
+                {
+                    preReplace_Node->right = Replace_Node->left;
+                    free(Replace_Node);
+                }
+            }    
+            
+        }
+        
+    }
+}
+
 int main()
 {   
     Tree tree1;
@@ -172,7 +284,10 @@ int main()
     Insert_Node(&tree1,30);
     Node *p=Search_Node(&tree1,1000);
     lnr(tree1.root);
-    nlr(tree1.root);
+    printf("\n");
+    Delete_Node(&tree1,50);
+    Delete_Node(&tree1,10);
+    lnr(tree1.root);
 
     return 0;
 }
