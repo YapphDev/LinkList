@@ -11,15 +11,15 @@ struct Node
 };
 typedef struct Node NODE;
 
-struct List
+struct Single_List
 {
     int Number_Of_Elements;
     NODE *head;
     NODE *tail;
 };
-typedef struct List List;
+typedef struct Single_List Single_List;
 
-void init(List *l)
+void init(Single_List *l)
 {
     if (NULL == l)
     {
