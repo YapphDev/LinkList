@@ -1,25 +1,24 @@
 /******************************************************************************
-
                             Online C Compiler.
                 Code, Compile, Run and Debug C program online.
 Write your code in this editor and press "Run" button to compile and execute it.
-
 *******************************************************************************/
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 
 struct Node 
-{
-    int data;
+{       
     struct Node *left;
     struct Node *right;
+    int data;
 }; typedef struct Node Node;
 
 struct Tree
 {
-    int Total;
     Node *root;
+    int Total;
 }; typedef struct Tree Tree;
 
 void init(Tree *Tr)
@@ -50,41 +49,45 @@ Node *Search_Node(Tree *Tr,int data)
     {  
         return NULL;
     }
-    else
-    {
-        /*
-        Fine Node_Data
-        */
-        Node *Node_Data;
-        Node_Data = Tr->root;
-        while( NULL != Node_Data  && Node_Data->data != data)
-        {   
-            if (Node_Data->data > data)
-            {
-                Node_Data = Node_Data->left; 
-            }
-            else
-            {
-                Node_Data = Node_Data->right;
-            }
+
+    /*
+    Fine Node_Data
+    */
+    Node *Node_Data;
+    Node_Data = Tr->root;
+    while( NULL != Node_Data  && Node_Data->data != data)
+    {   
+        if (Node_Data->data > data)
+        {
+            Node_Data = Node_Data->left; 
         }
-        return Node_Data;
+        else
+        {
+            Node_Data = Node_Data->right;
+        }
     }
+    return Node_Data;
+
 }
 
 Node *Insert_Node(Tree *Tr,int data)
 {  
+
+    if(NULL == Tr)
+    {
+        return NULL;
+    }
+    Node *node ;
+    node = Cre_Node(data);
+    if (NULL == node)
+    {
+        return NULL;
+    }
+    
     if(NULL == Tr->root)
     {  
-        Node *p ;
-        p = Cre_Node(data);
-        if(NULL == p)
-        {
-            return NULL;
-        }
-        Tr->root = p;
+        Tr->root = node;
         Tr->Total++;
-        return p;
     }
     else
     {   
@@ -113,37 +116,30 @@ Node *Insert_Node(Tree *Tr,int data)
         /* 
             Inserting Node to Farther 
         */
-        Node *p = Cre_Node(data);
-        if( NULL == p)
-        {
-            return NULL;
-        }
         if(Farther->data > data)
         {
-            Farther->left = p;
+            Farther->left = node;
         }
         else 
         {
-            Farther->right = p;
+            Farther->right = node;
         }
         Tr->Total++;
-        return p;
-
     }
+    return node;
 }
 
 void lnr (Node *root)
 {   
-
     if(NULL != root)
     {   
-        Node *p;
-        p = root;
-        if( NULL != p )
+        Node *node;
+        node = root;
+        if( NULL != node )
         {
-            lnr(p->left);
-            printf ("%d\t", p->data);
-            lnr(p->right);
+            lnr(node->left);
+            printf ("%d\t", node->data);
+            lnr(node->right);
         }
     }
 }
@@ -151,13 +147,27 @@ void nlr (Node *root)
 {
     if(NULL != root)
     {   
+        Node *node;
+        node = root;
+        if( NULL != node )
+        {   
+            printf ("%d\t", node->data);
+            nlr(node->left);
+            nlr(node->right);
+        }
+    }
+}
+void lrn (Node *root)
+{
+    if(NULL != root)
+    {   
         Node *p;
         p = root;
         if( NULL != p )
         {   
+            lrn(p->left);
+            lrn(p->right);
             printf ("%d\t", p->data);
-            nlr(p->left);
-            nlr(p->right);
         }
     }
 }
@@ -235,7 +245,8 @@ void Delete_Node(Tree *Tr, int data)
             If Node is prarent
             */
             else
-            {
+            {   
+                /* Find  Replace_NodeNode*/
                 Node *Replace_Node,*preReplace_Node;
                 preReplace_Node = Node_Data;
                 Replace_Node = Node_Data->left;
@@ -273,6 +284,16 @@ int main()
 {   
     Tree tree1;
     init(&tree1);
+    // for(int i = 0; i <10000 ; i ++ )
+    // {
+    //     Insert_Node(&tree1,i);
+    // }
+    // clock_t start, end;
+    // start = clock();
+    // Search_Node(&tree1,10000);
+    // end = clock();
+    // double time_Tree = (double)(end - start) / CLOCKS_PER_SEC;
+    // printf ("time_Tree: %f\n",time_Tree);
     Insert_Node(&tree1,50);
     Insert_Node(&tree1,30);
     Insert_Node(&tree1,75);
@@ -281,9 +302,11 @@ int main()
     Insert_Node(&tree1,10);
     Insert_Node(&tree1,65);
     Insert_Node(&tree1,60);
-    Insert_Node(&tree1,30);
+    //Insert_Node(&tree1,30);
+    Insert_Node(&tree1,73);
+    Insert_Node(&tree1,74);
     Node *p=Search_Node(&tree1,1000);
-    lnr(tree1.root);
+    lrn(tree1.root);
     printf("\n");
     Delete_Node(&tree1,50);
     Delete_Node(&tree1,10);
