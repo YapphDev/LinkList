@@ -1,15 +1,15 @@
 #include <stdio.h>
 #include <stdlib.h>
-#define true 1
-#define flase 0
-#define Swap( a, b ) do{ int t = a; a = b; b = t; }while(0)
+#define TRUE 1
+#define FALSE 0
+#define SWAP( a, b ) do{ int t = a; a = b; b = t; }while(0)
 typedef char bool;
 struct Node
 {
     int data;
     struct Node *next;
 };
-typedef struct Node NODE;
+typedef struct Node Node;
 
 struct Single_List
 {
