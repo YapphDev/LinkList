@@ -4,265 +4,255 @@
 #define FALSE 0
 #define SWAP( a, b ) do{ int t = a; a = b; b = t; }while(0)
 typedef char bool;
-struct Node
+struct node
 {
     int data;
-    struct Node *next;
+    struct node *next;
 };
-typedef struct Node Node;
+typedef struct node node;
 
-struct Single_List
+struct single_linked
 {
-    int Number_Of_Elements;
-    NODE *head;
-    NODE *tail;
+    int total_elements;
+    node *head;
 };
-typedef struct Single_List Single_List;
+typedef struct single_linked single_linked;
 
-void init(Single_List *l)
-{
-    if (NULL == l)
+single_linked *init_single_linked()
+{   
+    single_linked *list;
+    list = (single_linked*)calloc(1,sizeof(single_linked));
+    if(NULL == list)
     {
-        printf("erro\n");
+        return NULL;
     }
-    else
-    {
-        l->Number_Of_Elements = 0;
-        l->head = NULL;
-        l->tail = NULL;
-    }
+    list->head = NULL;
+    list->total_elements = 0;
+    return NULL;
 }
 
-NODE *CreNode(int n)
+node *cre_node(int data)
 {
-    NODE *p;
-    p = (NODE *)malloc(sizeof(NODE));
-    if (NULL == p)
+    node *new_node;
+    new_node = (node*)calloc(1,sizeof(node));
+    if (NULL == new_node)
     {
-        return flase;
-    }
-    else
-    {
-        p->data = n;
-        p->next = NULL;
-    }
-    return p;
+        return NULL;
+    } 
+    new_node->data = data;
+    new_node->next = NULL;
+    return new_node;
 }
-bool Insert_First(List *l, int n)
+node *insert_tail(single_linked *list, int data)
 {
-    NODE *p;
-    p = CreNode(n);
-    if (NULL == l || NULL == p)
+    node *new_node;
+    if (NULL == list )
     {
-        return flase;
+        return NULL;
+    }
+    new_node = cre_node(data);
+    if(NULL == new_node)
+    {
+    	return NULL;
+	}
+    if (0 == list->total_elements)
+    {
+        list->head = new_node;
+        list->total_elements = 1;
     }
     else
     {
-        if (0 == l->Number_Of_Elements)
-        {
-            l->head = p;
-            l->tail = p;
-            l->Number_Of_Elements = 1;
-        }
-        else
-        {
-            p->next = l->head;
-            l->head = p;
-            l->Number_Of_Elements++;
-        }
+    	node *temp_node;
+    	temp_node = list->head;
+    	while(NULL != temp_node->next)
+    	{
+    		temp_node = temp_node->next;
+		}
+		temp_node->next = new_node;
+		list->total_elements++;
     }
-    return true;
+    return new_node;
 }
-bool Insert_Last(List *l, int n)
+node *insert_head(single_linked *list, int data)
 {
-    NODE *p;
-    p = CreNode(n);
-    if (NULL == l || NULL == p)
+    node *node;
+    if (NULL == list)
     {
-        return flase;
+        return NULL;
+    }
+    node = cre_node(data);
+    if(NULL == node)
+    {
+    	return NULL;
+	}
+    if (0 == list->total_elements)
+    {
+        list->head = node;
+        list->total_elements = 1;
     }
     else
+    {   
+    	node->next = list->head;
+        list->head = node;
+        list->total_elements++;
+    }
+    return node;
+}
+node *insert_after_index(single_linked *list, int data, int index)
+{
+    node *new_node;
+    if (NULL == list)
     {
-        if (0 == l->Number_Of_Elements)
-        {
-            l->head = p;
-            l->tail = p;
-            l->Number_Of_Elements = 1;
-        }
-        else
+        return NULL;
+    }
+    if(index < 0 || index > list ->total_elements)
+    {
+    	return NULL;
+	}
+    new_node = cre_node(data);
+    if(NULL == new_node )
+    {
+    	return NULL;
+	} 
+    node *temp_node;
+    temp_node = list->head;
+    while(index--)
+    {
+        temp_node = temp_node->next;
+    }
+    new_node->next = temp_node->next;
+    temp_node->next = new_node;
+    list->total_elements++;
+    return new_node;
+}
+bool delete_first(single_linked *list)
+{
+    if (NULL == list )
+    {
+        return FALSE;
+    }
+    node *temp_node;
+    temp_node = list->head;
+    list->head = temp_node->next;
+    free(temp_node);
+    list->total_elements--;
+    return TRUE;
+}
+bool delete_node_index(single_linked *list, int index )
+{
+    if (NULL == list)
+    {
+        return FALSE;
+    }
+    if(index < 0 || index > list->total_elements)
+    {
+    	return FALSE;
+	}
+    if (0 == index)
+    {
+    	delete_first(list);
+    }
+    else
+    {   
+        node *temp_node , *pretemp_node;
+        temp_node = list->head;
+        pretemp_node = NULL;
+        while(index--)
         {   
-            (l->tail)->next = p;
-            l->tail = p;
-            l->Number_Of_Elements++;
+            pretemp_node = temp_node;
+            temp_node = temp_node->next; 
         }
+        pretemp_node->next = temp_node->next;
+        free(temp_node);
+        list->total_elements--;
     }
-    return true;
+    return TRUE;
 }
 
-bool Insert_After_Addr(List *l, int n, int addr)
+bool delete_node_data(single_linked *list, int data )
 {
-    NODE *p;
-    p = CreNode(n);
-    if (NULL == l || NULL == p || addr < 0 || addr > l ->Number_Of_Elements)
+    if (NULL == list )
     {
-        return flase;
+        return FALSE;
     }
-    else
+    
+    node *temp_node , *pretemp_node; 
+	temp_node = list->head;
+	pretemp_node = NULL;
+    while(temp_node->data != data && NULL != temp_node)
     {   
-        NODE *q;
-        q = (NODE*)l;
-        while(addr--)
-        {
-            q = q->next;
-        }
-        
-        p->next = q->next;
-        q->next = p;
-        l -> Number_Of_Elements ++;
-        
+        pretemp_node = temp_node;
+        temp_node = temp_node->next; 
     }
-    return true;
+ 
+    if(NULL == temp_node)
+	{
+		return FALSE;
+    }
+    
+    if (NULL != temp_node)
+    {
+        if(NULL == pretemp_node)
+	    {
+	        delete_first(list);
+	    }
+	    else
+	    {
+	        pretemp_node->next = temp_node->next;
+	        free(temp_node);
+	        list->total_elements--;
+	    }
+	}
+    return TRUE;
 }
-bool Delete_First(List *l)
-{
-    if (NULL == l )
+bool show_list(single_linked *list)
+{	
+	node *temp_node;
+    if (NULL == list)
     {
-        return flase;
+        return FALSE;
     }
-    else
-    {   
-        
-        NODE *q;
-        q = l->head;
-        l->head = q->next;
-        free(q);
+    temp_node = list->head;
+    while(NULL != temp_node)
+    {
+        printf("%d\t",temp_node->data);
+        temp_node = temp_node->next;
     }
-    l->Number_Of_Elements--;
-    return true;
+    printf("\n");
+    return TRUE;
 }
-bool Delete_Node_Addr(List *l, int addr )
+bool sort(single_linked *list)
 {
-    if (NULL == l || addr < 0 || addr > l ->Number_Of_Elements)
+    if(NULL == list)
     {
-        return flase;
-    }
-    else if (0 == addr)
-    {
-        NODE *q;
-        q = l->head;
-        l->head = q->next;
-        free(q);
-    }
-    else
-    {   
-        
-        NODE *q , *preq = NULL;
-        q = l->head;
-        while(addr--)
-        {   
-            preq = q;
-            q = q->next; 
-        }
-            preq->next = q->next;
-            q->next = NULL;
-            free(q);
-    }
-    l->Number_Of_Elements--;
-    return true;
-}
-
-bool Delete_Node_Data(List *l, int data )
-{
-    if (NULL == l )
-    {
-        return flase;
-    }
-    else
-    {   
-        
-        NODE *q , *preq = NULL;
-        q = (NODE*)l;
-        while(q->data!=data)
-        {   
-            preq = q;
-            q = q->next; 
-        }
-        if (NULL != q)
-        {
-            if(NULL == preq)
-        {
-            Delete_First(l);
-        }
-        else
-        {
-            preq->next = q->next;
-            q->next = NULL;
-            free(q);
-        }
-        }
-    }
-    l->Number_Of_Elements--;
-    return true;
-}
-
-
-bool Show_List(List l)
-{
-    if (NULL == &l)
-    {
-        return flase;
+        return FALSE;
     }
     else
     {
-        while(l.Number_Of_Elements--)
-        {
-            printf("%d\t",(l.head)->data);
-            l.head = (l.head)->next;
-        }
-       
+        node *i,*j;
+        for(i = list->head; i->next ; i = i->next)
+            for(j = i ->next; j ; j = j->next)
+                if(i->data > j->data)
+                    SWAP(i->data,j->data);
     }
-}
-bool Sort(List *l)
-{
-    if(NULL == l)
-    {
-        return flase;
-    }
-    else
-    {
-        NODE *p,*q;
-        for(p = l->head; p->next ; p = p->next)
-            for(q = p ->next; q ; q = q->next)
-                if(p->data > q->data)
-                    Swap(p->data,q->data);
-    }
-    return true;
+    return TRUE;
 }
 
 int main()
 {
-    List h;
-    init(&h);
-    Insert_First(&h,2);
-    Insert_First(&h,5);
-    Insert_First(&h,12);
-    Insert_First(&h,7);
-    Insert_First(&h,26);
-    Insert_Last(&h,17);
-    Insert_Last(&h,20);
-    Insert_After_Addr(&h,99,2);
-    Show_List(h);
-    printf("\n");
-    Sort(&h);
-    Show_List(h);
-    printf("\n");
-    Delete_Node_Addr(&h,0);
-    Delete_Node_Addr(&h,2);
-    Delete_Node_Data(&h,5);
-    //Delete_First(&h);
-    Show_List(h);
-
-
-
+	single_linked *list;
+	list = init_single_linked();
+    insert_head(&list,2);
+    insert_head(&list,3);
+    insert_head(&list,4);
+    insert_head(&list,5);
+    insert_head(&list,6);
+    insert_tail(&list,7);
+    insert_tail(&list,20);
+    insert_after_index(&list,99,2);
+    show_list(&list);
+	delete_node_data(&list,4);
+	sort(&list);
+	show_list(&list);
     return 0;
 }
