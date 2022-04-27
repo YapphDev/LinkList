@@ -1,357 +1,354 @@
 #include <stdio.h>
 #include <stdlib.h>
-#define true 1
-#define flase 0
-#define Swap( a, b ) do{ int t = a; a = b; b = t; }while(0)
+#define TRUE 1
+#define FALSE 0
+#define SWAP( a, b ) do{ int t = a; a = b; b = t; }while(0)
 typedef char bool;
-struct Node
+struct node
 {
     int data;
-    struct Node *next;
-    struct Node *previous;
+    struct node *next;
+    struct node *previous;
 };
-typedef struct Node NODE;
-struct doubleList
+typedef struct node node;
+struct double_linked
 {
-    int Number_Of_Elements; 
-    NODE *head;
-    NODE *tail;
+    int total_elements; 
+    node *head;
+    node *tail;
 };
-typedef struct doubleList doubleList;
+typedef struct double_linked double_linked;
 
-void init(doubleList *l)
+double_linked *init_double_linked()
+{   
+	double_linked *list;
+	list = (double_linked*)calloc(1,sizeof(double_linked));
+	if(NULL == list)
+	{
+		return NULL;
+	}
+	list->tail = NULL;
+	list->head = NULL;
+	list->total_elements = 0;
+	return list; 
+	
+}
+
+node *cre_node(int data)
 {
-    if (NULL == l)
+    node *new_node;
+    new_node = (node*)calloc(1,sizeof(node));
+    
+    if (NULL == new_node)
     {
-        printf("error\n");
+        return FALSE;
+    }
+    
+    new_node->data = data;
+    new_node->next = NULL;
+    new_node->previous = NULL;
+    return new_node;
+}
+node *insert_head(double_linked *list, int data)
+{
+    node *new_node;
+    if (NULL == list )
+    {
+        return NULL;
+    }
+    
+    new_node = cre_node(data);
+    if(NULL == new_node)
+    {
+    	return NULL;
+	}
+
+    if (NULL == list->head)
+    {
+        list->head = new_node;
+        list->tail = new_node;
+        list->total_elements++;
     }
     else
     {
-        l->Number_Of_Elements = 0;
-        l->head = NULL;
-        l->tail = NULL;
+        new_node->next = list->head;
+        (list->head)->previous = new_node;
+        list->head = new_node;
+        list->total_elements++;
     }
+    return new_node;
 }
-
-NODE *CreNode(int n)
+node *insert_tail(double_linked *list, int data)
 {
-    NODE *p;
-    p = (NODE *)malloc(sizeof(NODE));
-    if (NULL == p)
+    node *new_node;
+    if (NULL == list)
     {
-        return flase;
+        return NULL;
     }
-    else
+    
+    new_node = cre_node(data);
+    if(NULL == new_node)
     {
-        p->data = n;
-        p->next = NULL;
-        p->previous = NULL;
-    }
-    return p;
-}
-bool Insert_First(doubleList *l, int n)
-{
-    NODE *p;
-    p = CreNode(n);
-    if (NULL == l )
+    	return NULL;
+	}
+    if (NULL == list->tail)
     {
-        return flase;
-    }
-    else
-    {
-        if (0 == l->Number_Of_Elements)
-        {
-            l->head = l->tail = p;
-        }
-        else
-        {
-            p->next = l->head;
-            (l->head)->previous = p;
-            l->head = p;
-        }
-        l->Number_Of_Elements++;
-    }
-    return true;
-}
-bool Insert_Last(doubleList *l, int n)
-{
-    NODE *p;
-    p = CreNode(n);
-    if (NULL == l || NULL == p)
-    {
-        return flase;
-    }
-    else
-    {
-        if (0 == l->Number_Of_Elements)
-        {
-            l->head = l->tail = p;
-        }
-        else
-        {   
-            (l->tail)->next = p;
-            p->previous = l->tail;
-            l->tail = p;
-            
-        }
-        l->Number_Of_Elements++;
-    }
-    return true;
-}
-
-bool Insert_After_Addr(doubleList *l, int n, int addr)
-{
-
-    if (NULL == l || addr < 0 || addr > l ->Number_Of_Elements)
-    {
-        return flase;
+        list->head = new_node;
+		list->tail = new_node;
+		list->total_elements ++;
     }
     else
     {   
-        NODE *q;
-        q = l->head;
-        while(addr--)
-        {
-            q = q->next;
-        }
-        if(q == l->tail)
-        {
-            Insert_Last(l,n);
-        }
-        else
-        {   
-            NODE *p;
-            p = CreNode(n);
-            p->next = q->next;
-            q->next->previous = p;
-            q->next = p;
-            p->previous = q;   
-        }
-        l -> Number_Of_Elements ++;
+        (list->tail)->next = new_node;
+        new_node->previous = list->tail;
+        list->tail = new_node;
+        list->total_elements ++;
+    }
+    return new_node;
+}
+
+node *insert_after_index(double_linked *list, int data, int index)
+{
+	node *new_node,*temp_node;
+    if (NULL == list)
+    {
+        return NULL;
+    }
+	if(index < 0 || index > list->total_elements)
+	{
+		return NULL;
+	}
+    temp_node = list->head;
+    while(index--)
+    {
+        temp_node = temp_node->next;
+    }
+    
+    if(list->head == temp_node)
+    {
+        return insert_head(list,data);
+    }
+    else if (list->tail == temp_node)
+    {
+    	return insert_tail(list,data);
+	}
+    else
+    {   
+		new_node = cre_node(data);
+		if(NULL == new_node)
+		{
+			return NULL;
+		}
+        new_node->next = temp_node->next;
+        (temp_node->next)->previous = new_node ;
+        temp_node->next = new_node;
+        new_node->previous = temp_node;  
+		list->total_elements ++;
+		return new_node; 
+    }
+}
+
+bool delete_first(double_linked *list)
+{   
+	node *temp_node;
+    if (NULL == list )
+    {
+        return FALSE;
+    }
+
+    temp_node = list->head;
+    if(NULL == temp_node)
+    {
+    	return FALSE;
+	}
+	
+    if(temp_node->next == NULL)
+    {
+        list->head= NULL;
+		list->tail = NULL;
+        free(temp_node);
+        list->total_elements --;
+        return TRUE;
+    }
+    else
+    {
+        list->head = temp_node->next;
+        (temp_node->next)->previous = NULL;
+        free(temp_node);
+        list->total_elements --;
+        return TRUE;
+    }
+    
+}
+bool delete_last(double_linked *list)
+{	
+	node *temp_node;
+    if (NULL == list )
+    {
+        return FALSE;
+    }
+    
+    temp_node = list->tail;
+    if(NULL == temp_node)
+    {
+    	return FALSE;
+	}
+
+    if(temp_node->previous == NULL)
+    {
+        list->head = NULL;
+		list->tail = NULL;
+        free(temp_node);
+        list->total_elements --;
+        return TRUE;
+    }
+    else
+    {
+        list->tail = temp_node->previous;
+        temp_node->previous->next = NULL;
+        free(temp_node);
+        list->total_elements --;
+        return TRUE;
+    }
+}
+
+bool delete_node_index(double_linked *list, int index )
+{   
+	node *temp_node;
+    if (NULL == list)
+    {
+        return FALSE;
+    }
+    if (index < 0 || index >= list->total_elements)
+    {
+    	return FALSE;
+	}
+    
+    
+    if (0 == index)
+    {
+        return delete_first(list);
+    }
+    if (list->total_elements-1 == index)
+    {
+        return delete_last(list);
+    }
+    
+    temp_node  = list->head;
+    while(index--)
+    {   
+        temp_node = temp_node->next; 
+    }
+    temp_node->previous->next = temp_node->next;
+    temp_node->next->previous = temp_node->previous;
+    free(temp_node);
+    list->total_elements--;
+    return TRUE;
+}
+
+bool delete_node_data(double_linked *list, int data )
+{	
+	node *data_node;
+    if (NULL == list || NULL == list->head)
+    {
+        return FALSE;
+    }
+
+    data_node = list->head;
+    while((data_node != NULL) && (data_node->data != data))
+    {
+        data_node=data_node->next;
+    }
+    if(NULL == data_node)
+    {
+    	return FALSE;
+	}
+
+
+    if(data_node->previous == NULL)
+    {
+		return delete_first(list);
         
     }
-    return true;
-}
-bool Delete_First(doubleList *l)
-{
-    if (NULL == l )
+    else if (data_node->next == NULL)
     {
-        return flase;
+        return delete_last(list);
     }
     else
-    {   
-        NODE *q;
-        q = l->head;
-        if(q->next == NULL)
-        {
-            l->head=l->tail=NULL;
-            q->next = q->previous = NULL;
-            free(q);
-        }
-        else
-        {
-            l->head = q->next;
-            q->next->previous = NULL;
-            q->next = NULL;
-            free(q);
-        }
-    }
-    l->Number_Of_Elements--;
-    return true;
-}
-bool Delete_Last(doubleList *l)
-{
-    if (NULL == l )
     {
-        return flase;
+        data_node->previous->next = data_node->next;
+        data_node->next->previous = data_node->previous;
+        free(data_node);
+        list->total_elements--;
+        return TRUE;
     }
-    else
-    {   
-        NODE *q;
-        q = l->tail;
-        if(q->previous == NULL)
-        {
-            l->head=l->tail=NULL;
-            q->next = q->previous = NULL;
-            free(q);
-        }
-        else
-        {
-            l->tail = q->previous;
-            q->previous->next = NULL;
-            q->next = q->previous = NULL;
-            free(q);
-        }
-    }
-    l->Number_Of_Elements--;
-    return true;
-}
 
-bool Delete_Node_Addr(doubleList *l, int addr )
-{
-    if (NULL == l || addr < 0 || addr > l ->Number_Of_Elements)
-    {
-        return flase;
-    }
-    else if (0 == addr)
-    {
-        Delete_First(l);
-    }
-    else if (l->Number_Of_Elements == addr-1)
-    {
-        Delete_Last(l);
-    }
-    else
-    {   
-        
-        NODE *q;
-        q = l->head;
-        while(addr--)
-        {   
-            q = q->next; 
-        }
-            q->previous->next = q->next;
-            q->next->previous = q->previous;
-            q->next = q->previous = NULL;
-            free(q);
-    }
-    l->Number_Of_Elements--;
-    return true;
 }
-
-bool Delete_Node_Data(doubleList *l, int data )
+//
+//
+bool show_list(double_linked *list)
 {
-    if (NULL == l )
+    if (NULL == list)
     {
-        return flase;
+        return FALSE;
     }
-    else
-    {   
-        NODE *q;
-        q = l->head;
-        while((q != NULL) && (q->data != data) )
-        {
-            q=q->next;
-        }
-        if (q != NULL)
-        {   
-            NODE *p;
-            p = q;
-            Delete_Node_Data((doubleList*)q,data);
-            if(q->previous == NULL)
-            {
-                l->head = q->next;
-                q->next->previous = NULL;
-                q->next = NULL;
-                free(q);
-            }
-            else if (q->next == NULL)
-            {
-                l->tail = q->previous;
-                q->previous->next = NULL;
-                q->next = q->previous = NULL;
-                free(q);
-            }
-            else
-            {
-                q->previous->next = q->next;
-                q->next->previous = q->previous;
-                q->next = q->previous = NULL;
-                free(q);
-            }
-            l->Number_Of_Elements--;
-        }
+    node *temp_node = list->head;
+    while(NULL != temp_node)
+    {
+        printf("%d\t",temp_node->data);
+        temp_node = temp_node->next;
     }
-    return true;
+    printf("\n");
+    return TRUE;
 }
-
-
-bool Show_List(doubleList *l)
-{
-    if (NULL == &l)
+bool show_list_invert(double_linked *list)
+{	
+	node *temp_node;
+    if (NULL == list)
     {
-        return flase;
+        return FALSE;
     }
-    else
-    {   NODE *p = l->head;
-        while(p != NULL)
-        {
-            printf("%d\t",p->data);
-            p = p->next;
-        }
-       
+	temp_node = list->tail;
+    while(temp_node != NULL)
+    {
+        printf("%d\t",temp_node->data);
+        temp_node = temp_node->previous;
     }
-    return true;
+    printf("\n");
+    return TRUE;
 }
-bool Show_List_Invert(doubleList *l)
+bool sort(double_linked *list)
 {
-    if (NULL == &l)
+    if(NULL == list)
     {
-        return flase;
-    }
-    else
-    {   NODE *p = l->tail;
-        while(p != NULL)
-        {
-            printf("%d\t",p->data);
-            p = p->previous;
-        }
-       
-    }
-    return true;
-}
-bool Sort(doubleList *l)
-{
-    if(NULL == l)
-    {
-        return flase;
+        return FALSE;
     }
     else
     {
-        NODE *p,*q;
-        for(p = l->head; p->next ; p = p->next)
-            for(q = p ->next; q ; q = q->next)
-                if(p->data > q->data)
-                    Swap(p->data,q->data);
+        node *i,*j;
+        for(i = list->head; i->next ; i = i->next)
+            for(j = i ->next; j ; j = j->next)
+                if(i->data > j->data)
+                    SWAP(i->data,j->data);
     }
-    return true;
+    return TRUE;
 }
 
 int main()
-{
-    doubleList h;
-    init(&h);
-    Insert_First(&h,2);
-    Insert_First(&h,20);
-    Insert_First(&h,5);
-    Insert_First(&h,99);
-    Insert_First(&h,12);
-    Insert_First(&h,20);
-    
-    //Insert_First(&h,7);
-    Insert_First(&h,26);
-    Insert_Last(&h,17);
-    Insert_Last(&h,20);
-    Insert_Last(&h,7);
-    Insert_After_Addr(&h,99,2);
-    Show_List(&h);
-    //printf("\n");
-    // Sort(&h);
-    // Show_List(&h);
-    //printf("\n");
-    //Show_List_Invert(&h);
-    printf("\n");
-    //Delete_Node_Addr(&h,0);
-    //Delete_Node_Addr(&h,1);
-    Delete_Node_Data(&h,99);
-    // Delete_First(&h);
-    // Delete_First(&h);
-    // Delete_Last(&h);
-    // Delete_Last(&h);
-    //printf("%p",&h);
-    Show_List(&h);
-
-
-
+{     
+	double_linked *list;
+	list = init_double_linked();
+	insert_head(list,19);
+	insert_head(list,11);
+	insert_head(list,30);
+	insert_head(list,14);
+	insert_head(list,21);
+	insert_head(list,22);
+	
+	
+    show_list(list);
+    printf("%d\n",delete_node_data(list,14));
+    sort(list);
+    show_list(list);
     return 0;
 }
