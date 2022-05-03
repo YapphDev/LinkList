@@ -1,258 +1,299 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 #define TRUE 1
 #define FALSE 0
-#define SWAP( a, b ) do{ int t = a; a = b; b = t; }while(0)
+#define SWAP( a, b ) do{ int t = a; a = b; b = t; } while(0)
 typedef char bool;
-struct node
-{
+struct node 
+{       
     int data;
-    struct node *next;
-};
-typedef struct node node;
+    struct node *left;
+    struct node *right;
+}; typedef struct node node;
 
-struct single_linked
+struct binary_tree
 {
-    int total_elements;
-    node *head;
-};
-typedef struct single_linked single_linked;
+    int total_node;
+    node *root;
+}; typedef struct binary_tree binary_tree;
 
-single_linked *init_single_linked()
+binary_tree *init_binary_tree()
 {   
-    single_linked *list;
-    list = (single_linked*)calloc(1,sizeof(single_linked));
-    if(NULL == list)
+    binary_tree *tree;
+    tree = (binary_tree*)calloc(1,sizeof(binary_tree));
+    if(NULL == tree)
     {
         return NULL;
     }
-    list->head = NULL;
-    list->total_elements = 0;
-    return NULL;
+    tree->root = NULL;
+    tree->total_node = 0;
+    return tree;
 }
-
 node *cre_node(int data)
 {
     node *new_node;
     new_node = (node*)calloc(1,sizeof(node));
+    if(NULL == new_node)
+    {
+        return NULL;
+    }
+
+    new_node->left = NULL;
+    new_node->right = NULL;
+    new_node->data = data;
+    
+    return new_node;
+}
+
+node *search_node(binary_tree *tree,int data)
+{  
+    node *data_node;
+    if(NULL == tree || NULL == tree->root )
+    {  
+        return NULL;
+    }
+
+    /*
+    Finding data_node->data == data
+    */
+    
+    data_node = tree->root;
+    while( NULL != data_node  && data_node->data != data)
+    {   
+        if (data_node->data > data)
+        {
+            data_node = data_node->left; 
+        }
+        else
+        {
+            data_node = data_node->right;
+        }
+    }
+    return data_node;
+
+}
+
+node *insert_node(binary_tree *tree,int data)
+{  
+    node *new_node;
+    if(NULL == tree)
+    {
+        return NULL;
+    }
+    
+    new_node = cre_node(data);
     if (NULL == new_node)
     {
         return NULL;
-    } 
-    new_node->data = data;
-    new_node->next = NULL;
-    return new_node;
-}
-node *insert_tail(single_linked *list, int data)
-{
-    node *new_node;
-    if (NULL == list )
-    {
-        return NULL;
     }
-    new_node = cre_node(data);
-    if(NULL == new_node)
-    {
-    	return NULL;
-	}
-    if (0 == list->total_elements)
-    {
-        list->head = new_node;
-        list->total_elements = 1;
-    }
-    else
-    {
-    	node *temp_node;
-    	temp_node = list->head;
-    	while(NULL != temp_node->next)
-    	{
-    		temp_node = temp_node->next;
-		}
-		temp_node->next = new_node;
-		list->total_elements++;
-    }
-    return new_node;
-}
-node *insert_head(single_linked *list, int data)
-{
-    node *node;
-    if (NULL == list)
-    {
-        return NULL;
-    }
-    node = cre_node(data);
-    if(NULL == node)
-    {
-    	return NULL;
-	}
-    if (0 == list->total_elements)
-    {
-        list->head = node;
-        list->total_elements = 1;
+    
+    if(NULL == tree->root)
+    {  
+        tree->root = new_node;
     }
     else
     {   
-    	node->next = list->head;
-        list->head = node;
-        list->total_elements++;
+        /*
+         Finding prarent  node
+         */
+        node *prarent,*child;
+        child = tree->root;
+        prarent = NULL;
+        
+        while( NULL != child )
+        {   
+
+            prarent = child;
+            if (child->data > data)
+            {
+                child = child->left; 
+            }
+            
+            else 
+            {
+                child = child->right;
+            }
+        }
+        
+        /* 
+         Inserting node to prarent 
+         */
+        if(prarent->data > data)
+        {
+            prarent->left = new_node;
+        }
+        else 
+        {
+            prarent->right = new_node;
+        }
     }
-    return node;
-}
-node *insert_after_index(single_linked *list, int data, int index)
-{
-    node *new_node;
-    if (NULL == list)
-    {
-        return NULL;
-    }
-    if(index < 0 || index > list ->total_elements)
-    {
-    	return NULL;
-	}
-    new_node = cre_node(data);
-    if(NULL == new_node )
-    {
-    	return NULL;
-	} 
-    node *temp_node;
-    temp_node = list->head;
-    while(index--)
-    {
-        temp_node = temp_node->next;
-    }
-    new_node->next = temp_node->next;
-    temp_node->next = new_node;
-    list->total_elements++;
+    tree->total_node++;
     return new_node;
 }
-bool delete_first(single_linked *list)
-{
-    if (NULL == list )
+
+bool lnr (node *root)
+{   
+    node *temp_node;
+    if(NULL == root)
     {
         return FALSE;
     }
-    node *temp_node;
-    temp_node = list->head;
-    list->head = temp_node->next;
-    free(temp_node);
-    list->total_elements--;
+        
+    temp_node = root;
+    if( NULL != temp_node )
+    {
+        lnr(temp_node->left);
+        printf ("%d\t", temp_node->data);
+        lnr(temp_node->right);
+    }
     return TRUE;
 }
-bool delete_node_index(single_linked *list, int index )
+bool nlr (node *root)
 {
-    if (NULL == list)
+    node *temp_node;
+    if(NULL == root)
     {
         return FALSE;
     }
-    if(index < 0 || index > list->total_elements)
-    {
-    	return FALSE;
-	}
-    if (0 == index)
-    {
-    	delete_first(list);
-    }
-    else
+    temp_node = root;
+    if( NULL != temp_node )
     {   
-        node *temp_node , *pretemp_node;
-        temp_node = list->head;
-        pretemp_node = NULL;
-        while(index--)
-        {   
-            pretemp_node = temp_node;
-            temp_node = temp_node->next; 
-        }
-        pretemp_node->next = temp_node->next;
-        free(temp_node);
-        list->total_elements--;
+        printf ("%d\t", temp_node->data);
+        nlr(temp_node->left);
+        nlr(temp_node->right);
     }
     return TRUE;
 }
 
-bool delete_node_data(single_linked *list, int data )
-{
-    if (NULL == list )
+
+bool delete_node(binary_tree *tree, int data)
+{   
+    node *data_node,*parent_data_node;
+    if(NULL == tree || NULL == tree->root)
     {
         return FALSE;
     }
-    
-    node *temp_node , *pretemp_node; 
-	temp_node = list->head;
-	pretemp_node = NULL;
-    while(temp_node->data != data && NULL != temp_node)
+
+    data_node = tree->root;
+    parent_data_node = NULL;
+    /*
+      Find data_node 
+    */
+    while( NULL != data_node  && data_node->data != data)
     {   
-        pretemp_node = temp_node;
-        temp_node = temp_node->next; 
-    }
- 
-    if(NULL == temp_node)
-	{
-		return FALSE;
+        parent_data_node = data_node;
+        if (data_node->data > data)
+        {
+            data_node = data_node->left; 
+        }
+        
+        else 
+        {
+            data_node = data_node->right;
+        }
     }
     
-    if (NULL != temp_node)
-    {
-        if(NULL == pretemp_node)
-	    {
-	        delete_first(list);
-	    }
-	    else
-	    {
-	        pretemp_node->next = temp_node->next;
-	        free(temp_node);
-	        list->total_elements--;
-	    }
-	}
-    return TRUE;
-}
-bool show_list(single_linked *list)
-{	
-	node *temp_node;
-    if (NULL == list)
+    /*
+        Delete Node
+    */
+    if (NULL == data_node)
     {
         return FALSE;
     }
-    temp_node = list->head;
-    while(NULL != temp_node)
+    
+    
+    /*---------------------------------------------------------------------
+    If Node is leaf
+    */
+    if (NULL == data_node->right && NULL == data_node->left)
     {
-        printf("%d\t",temp_node->data);
-        temp_node = temp_node->next;
+        if( parent_data_node->data > data_node->data)
+        {
+            parent_data_node->left = NULL;
+        }
+        else
+        {
+            parent_data_node->right = NULL;
+        }
+        free(data_node);
     }
-    printf("\n");
-    return TRUE;
-}
-bool sort(single_linked *list)
-{
-    if(NULL == list)
+    /*-------------------------------------------------------
+    If Node is prarent has one leaf
+    */
+    else if (NULL == data_node->right)
     {
-        return FALSE;
+        if (parent_data_node->data > data_node->data)
+        {
+            parent_data_node->left = data_node->left;
+        }
+        else
+            parent_data_node->right = data_node->left;
+        free(data_node);
     }
+    else if (NULL == data_node->left)
+    {
+        if (parent_data_node->data > data_node->data)
+        {
+            parent_data_node->left = data_node->right;
+        }
+        else
+            parent_data_node->right = data_node->right;
+        free(data_node);
+    }
+    
+    /*--------------------------------------------------------------
+    If Node is prarent
+    */
     else
-    {
-        node *i,*j;
-        for(i = list->head; i->next ; i = i->next)
-            for(j = i ->next; j ; j = j->next)
-                if(i->data > j->data)
-                    SWAP(i->data,j->data);
-    }
+    {   
+        /* 
+        Finding  Replace_NodeNode
+        */
+        node *replace_node,*parent_replace_node;
+        parent_replace_node = data_node;
+        replace_node = data_node->left;
+        while(replace_node->right != NULL )
+        {   
+            parent_replace_node = replace_node;
+            replace_node = replace_node->right;
+        }
+        data_node->data = replace_node->data;
+        
+        /*
+        If Replace_Node is leaf
+        */
+        if ( NULL == replace_node->left)
+        {
+            parent_replace_node->right = NULL;
+            free(replace_node);
+        }
+        /*
+        If Replace_Node is prarent have one leaf
+        */
+        else
+        {
+            parent_replace_node->right = replace_node->left;
+            free(replace_node);
+        }
+    }    
+    tree->total_node--;
     return TRUE;
 }
 
 int main()
-{
-	single_linked *list;
-	list = init_single_linked();
-    insert_head(&list,2);
-    insert_head(&list,3);
-    insert_head(&list,4);
-    insert_head(&list,5);
-    insert_head(&list,6);
-    insert_tail(&list,7);
-    insert_tail(&list,20);
-    insert_after_index(&list,99,2);
-    show_list(&list);
-	delete_node_data(&list,4);
-	sort(&list);
-	show_list(&list);
+{   
+    binary_tree *tree;
+    tree = init_binary_tree();
+    insert_node(tree,50);
+    insert_node(tree,75);
+    insert_node(tree,65);
+    insert_node(tree,90);
+    insert_node(tree,20);
+    lnr(tree->root);
+     printf("\n");
+    delete_node(tree,65);
+    lnr(tree->root);
+    printf("\n");
     return 0;
 }
