@@ -95,16 +95,16 @@ node *insert_node(binary_tree *tree,int data)
     else
     {   
         /*
-         Finding prarent  node
+         Finding parent  node
          */
-        node *prarent,*child;
+        node *parent,*child;
         child = tree->root;
-        prarent = NULL;
+        parent = NULL;
         
         while( NULL != child )
         {   
 
-            prarent = child;
+            parent = child;
             if (child->data > data)
             {
                 child = child->left; 
@@ -117,15 +117,15 @@ node *insert_node(binary_tree *tree,int data)
         }
         
         /* 
-         Inserting node to prarent 
+         Inserting node to parent 
          */
-        if(prarent->data > data)
+        if(parent->data > data)
         {
-            prarent->left = new_node;
+            parent->left = new_node;
         }
         else 
         {
-            prarent->right = new_node;
+            parent->right = new_node;
         }
     }
     tree->total_node++;
@@ -219,7 +219,7 @@ bool delete_node(binary_tree *tree, int data)
         free(data_node);
     }
     /*-------------------------------------------------------
-    If Node is prarent has one leaf
+    If Node is parent has one leaf
     */
     else if (NULL == data_node->right)
     {
@@ -243,12 +243,12 @@ bool delete_node(binary_tree *tree, int data)
     }
     
     /*--------------------------------------------------------------
-    If Node is prarent
+    If Node is parent
     */
     else
     {   
         /* 
-        Finding  Replace_NodeNode
+        Finding  Replace_Node
         */
         node *replace_node,*parent_replace_node;
         parent_replace_node = data_node;
@@ -269,7 +269,7 @@ bool delete_node(binary_tree *tree, int data)
             free(replace_node);
         }
         /*
-        If Replace_Node is prarent have one leaf
+        If Replace_Node is parent have one leaf
         */
         else
         {
